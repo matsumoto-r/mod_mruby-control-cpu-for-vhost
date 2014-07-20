@@ -9,7 +9,7 @@ def attach_cgroup c, name=nil
     c.create
   end
   c.attach
-  Apache.log Apache::APLOG_INFO, "attached #{name} cgroup"
+  Apache.log Apache::APLOG_INFO, "attached #{name} cgroup" if ! name.nil?
 end
 
 def create_list filename
