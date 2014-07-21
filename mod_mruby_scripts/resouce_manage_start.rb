@@ -51,6 +51,7 @@ if resource.most_heavy_hosts.include? r.hostname
   # most_heavy_hosts
   # 特に負荷の高いユーザリストが参加させられるリソースグループ
   # 1コアの100％固定でしか使えない、全タスクが1コア内で処理
+  # 事前にcgroup/cpu/httpd-static-limitedグループをhttpd権限で作っておく
   c = Cgroup::CPU.new "httpd-static-limited"
   c.cfs_quota_us = 100000
   Apache::Resource.attach_cgroup c, "httpd-static-limited"
@@ -59,6 +60,7 @@ elsif resource.heavy_hosts.include? r.hostname
   # 負荷の高いユーザリストが参加させられるリソースグループの設定
   # 全CPUの25%（コア含む）のリソースを分配、コアが24個の場合最大6コア内で分配
   # httpd グループと競合しない場合は100％(全コア)使用
+  # 事前にcgroup/cpu/httpd-limitedグループをhttpd権限で作っておく
   c = Cgroup::CPU.new "httpd-limited"
   c.shares = 25
   Apache::Resource.attach_cgroup c, "httpd-limited"
@@ -66,6 +68,7 @@ else
   # 通常のユーザが参加させられるリソースグループの設定
   # 全CPUの75%（コア含む）のリソースを分配、コアが24個の場合最大18コア内で分配
   # httpd-limited グループと競合しない場合は100％(全コア)使用
+  # 事前にcgroup/cpu/httpdグループをhttpd権限で作っておく
   c = Cgroup::CPU.new "httpd"
   c.shares = 75
   Apache::Resource.attach_cgroup c, "httpd"
